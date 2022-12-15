@@ -41,5 +41,15 @@ public class TransactionsController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseStatusException putTransaction(@PathVariable Long id) {
+        for (Transaction transaction : transactions) {
+            if (id.equals(transaction.id)) {
+                transactions.remove(transaction);
+                return new ResponseStatusException(HttpStatus.OK);
+            }
+        }
+        return new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
 
 }
