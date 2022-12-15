@@ -2,6 +2,7 @@ package net.yorksolutions.budgetbe.controllers;
 
 import net.yorksolutions.budgetbe.models.Transaction;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -42,14 +43,14 @@ public class TransactionsController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseStatusException putTransaction(@PathVariable Long id) {
+    public ResponseEntity putTransaction(@PathVariable Long id) {
         for (Transaction transaction : transactions) {
             if (id.equals(transaction.id)) {
                 transactions.remove(transaction);
-                return new ResponseStatusException(HttpStatus.OK);
+                return new ResponseEntity(HttpStatus.OK);
             }
         }
-        return new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
 }
