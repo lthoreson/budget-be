@@ -1,8 +1,7 @@
 package net.yorksolutions.budgetbe.services;
 
 import net.yorksolutions.budgetbe.models.Transaction;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
+import net.yorksolutions.budgetbe.repositories.TransactionsRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,38 +9,31 @@ import java.util.List;
 
 @Service
 public class TransactionsService {
-    private ArrayList<Transaction> transactions = new ArrayList<>(List.of(
-            new Transaction(0L,"Whole Foods",10.00, 0L, 0L)
-    ));
-    private Long nextTransactionId = 1L;
+    private TransactionsRepository repository;
+
+    public TransactionsService(TransactionsRepository repository) {
+        this.repository = repository;
+    }
 
     public Iterable<Transaction> getTransactions() {
-        return transactions;
+        return repository.findAll();
     }
 
     public Transaction postTransaction(Transaction transaction) {
-        transaction.id = nextTransactionId++;
-        transactions.add(transaction);
-        return transaction;
+        return repository.save(transaction);
     }
 
     public Transaction putTransaction(Long id, Transaction transaction) throws Exception {
-        for (Transaction t : transactions) {
-            if (id.equals(t.id)) {
-                transactions.remove(t);
-                transactions.add(transaction);
-                return transaction;
-            }
+        if (repository.existsById(id)) {
+            return repository.save(transaction);
         }
         throw new Exception();
     }
 
     public void deleteTransaction(Long id) throws Exception {
-        for (Transaction transaction : transactions) {
-            if (id.equals(transaction.id)) {
-                transactions.remove(transaction);
-                return;
-            }
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return;
         }
         throw new Exception();
     }
