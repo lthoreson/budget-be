@@ -1,10 +1,7 @@
 package net.yorksolutions.budgetbe.services;
 
 import net.yorksolutions.budgetbe.models.Account;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +17,7 @@ public class AccountsService {
         return accounts;
     }
 
-    public Account putBudgets(Long id, Account account) throws Exception {
+    public Account putAccounts(Long id, Account account) throws Exception {
         for (Account a : accounts)
             if (id.equals(a.id)) {
                 accounts.remove(a);

@@ -1,56 +1,57 @@
 package net.yorksolutions.budgetbe.controllers;
 
 import net.yorksolutions.budgetbe.models.Transaction;
+import net.yorksolutions.budgetbe.services.TransactionsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @RequestMapping("/transactions")
 @CrossOrigin
 public class TransactionsController {
-    private ArrayList<Transaction> transactions = new ArrayList<>(List.of(
-            new Transaction(0L,"Whole Foods",10.00, 0L, 0L)
-    ));
-    private Long nextTransactionId = 1L;
+    private TransactionsService service;
+
+    public TransactionsController(TransactionsService service) {
+        this.service = service;
+    }
 
     @GetMapping
     public Iterable<Transaction> getTransactions() {
-        return transactions;
+        try {
+            return service.getTransactions();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
     public Transaction postTransaction(@RequestBody Transaction transaction) {
-        transaction.id = nextTransactionId++;
-        transactions.add(transaction);
-        return transaction;
+        try {
+            return service.postTransaction(transaction);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping("/{id}")
     public Transaction putTransaction(@PathVariable Long id, @RequestBody Transaction transaction) {
-        for (Transaction t : transactions) {
-            if (id.equals(t.id)) {
-                transactions.remove(t);
-                transactions.add(transaction);
-                return transaction;
-            }
+        try {
+            return service.putTransaction(id, transaction);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity putTransaction(@PathVariable Long id) {
-        for (Transaction transaction : transactions) {
-            if (id.equals(transaction.id)) {
-                transactions.remove(transaction);
-                return new ResponseEntity(HttpStatus.OK);
-            }
+    public ResponseEntity deleteTransaction(@PathVariable Long id) {
+        try {
+            service.deleteTransaction(id);
+            return new ResponseEntity(HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
 }

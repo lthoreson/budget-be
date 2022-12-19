@@ -2,6 +2,7 @@ package net.yorksolutions.budgetbe.controllers;
 
 import net.yorksolutions.budgetbe.models.Account;
 import net.yorksolutions.budgetbe.models.Budget;
+import net.yorksolutions.budgetbe.services.BudgetsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,31 +14,37 @@ import java.util.List;
 @RequestMapping("/budgets")
 @CrossOrigin
 public class BudgetsController {
-    private ArrayList<Budget> budgets = new ArrayList<>(List.of(
-            new Budget(0L,"Grocery",1000.00, new ArrayList<String>())
-    ));
-    private Long nextBudgetId = 1L;
+    private BudgetsService service;
+
+    public BudgetsController(BudgetsService service) {
+        this.service = service;
+    }
 
     @GetMapping
     public Iterable<Budget> getBudgets() {
-        return budgets;
+        try {
+            return service.getBudgets();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @PutMapping("/{id}")
     public Budget putBudgets(@PathVariable Long id, @RequestBody Budget budget) {
-        for (Budget b : budgets)
-            if (id.equals(b.id)) {
-                budgets.remove(b);
-                budgets.add(budget);
-                return budget;
-            }
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        try {
+            return service.putBudgets(id, budget);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping
     public Budget postBudgets(@RequestBody Budget budget) {
-        budget.id = nextBudgetId++;
-        budgets.add(budget);
-        return budget;
+        try {
+            return service.postBudgets(budget);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }

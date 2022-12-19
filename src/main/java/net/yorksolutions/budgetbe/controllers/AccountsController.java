@@ -31,9 +31,9 @@ public class AccountsController {
     }
 
     @PutMapping("/{id}")
-    public Account putBudgets(@PathVariable Long id, @RequestBody Account account) {
+    public Account putAccounts(@PathVariable Long id, @RequestBody Account account) {
         try {
-            return this.service.putBudgets(id, account);
+            return this.service.putAccounts(id, account);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
