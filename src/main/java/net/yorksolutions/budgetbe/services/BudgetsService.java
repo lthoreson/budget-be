@@ -1,11 +1,9 @@
 package net.yorksolutions.budgetbe.services;
 
+import net.yorksolutions.budgetbe.dto.FrontBudget;
 import net.yorksolutions.budgetbe.models.Budget;
 import net.yorksolutions.budgetbe.repositories.BudgetsRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class BudgetsService {
@@ -26,7 +24,10 @@ public class BudgetsService {
         throw new Exception();
     }
 
-    public Budget postBudgets(Budget budget) {
-        return repository.save(budget);
+    public Budget postBudgets(FrontBudget budget) {
+        final var newBudget = new Budget();
+        newBudget.name = budget.name;
+        newBudget.total = budget.total;
+        return repository.save(newBudget);
     }
 }

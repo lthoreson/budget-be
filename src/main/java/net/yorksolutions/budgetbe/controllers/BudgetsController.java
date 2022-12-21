@@ -1,5 +1,6 @@
 package net.yorksolutions.budgetbe.controllers;
 
+import net.yorksolutions.budgetbe.dto.FrontBudget;
 import net.yorksolutions.budgetbe.models.Budget;
 import net.yorksolutions.budgetbe.services.BudgetsService;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ public class BudgetsController {
         try {
             return service.getBudgets();
         } catch (Exception e) {
+            System.out.println(e);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
@@ -36,7 +38,7 @@ public class BudgetsController {
     }
 
     @PostMapping
-    public Budget postBudgets(@RequestBody Budget budget) {
+    public Budget postBudgets(@RequestBody FrontBudget budget) {
         try {
             return service.postBudgets(budget);
         } catch (Exception e) {
