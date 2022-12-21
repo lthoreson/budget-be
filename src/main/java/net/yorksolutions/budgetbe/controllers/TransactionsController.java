@@ -31,6 +31,7 @@ public class TransactionsController {
         try {
             return service.postTransaction(transaction);
         } catch (Exception e) {
+            System.out.println(e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }

@@ -23,32 +23,40 @@ public class TransactionsService {
         return repository.findAll();
     }
 
-    public Transaction postTransaction(Transaction transaction) throws Exception {
-        createDest(transaction);
-        return repository.save(transaction);
+    public Transaction postTransaction(Transaction transaction) {
+        Transaction newTrans = new Transaction();
+        newTrans.destination = transaction.destination;
+        newTrans.amount = transaction.amount;
+        newTrans.budget = transaction.budget;
+        newTrans.account = transaction.account;
+        updateDestination(newTrans);
+        return repository.save(newTrans);
     }
 
     public Transaction putTransaction(Long id, Transaction transaction) throws Exception {
-        if (!repository.existsById(id)) {
+        Transaction existingTrans = repository.findById(id).orElse(null);
+        if (existingTrans == null) {
             throw new Exception();
         }
-        createDest(transaction);
+        existingTrans.amount = transaction.amount;
+        existingTrans.budget = transaction.budget;
+        existingTrans.account = transaction.account;
+        updateDestination(existingTrans);
         return repository.save(transaction);
     }
 
-    private Destination createDest(Transaction transaction) throws Exception{
+    private void updateDestination(Transaction transaction) {
         final var destination = destinationsRepository.findDestinationByName(transaction.destination).orElse(null);
         if (destination == null) {
             Destination newDestination = new Destination();
             newDestination.name = transaction.destination;
-            newDestination.budget = budgetsRepository.findById(transaction.budget).orElse(null);
+            if (transaction.budget != null)
+                newDestination.budget = budgetsRepository.findById(transaction.budget).orElse(null);
             destinationsRepository.save(newDestination);
-            return newDestination;
         } else if (destination.budget == null && transaction.budget != null) {
             destination.budget = budgetsRepository.findById(transaction.budget).orElse(null);
-            return destination;
+            destinationsRepository.save(destination);
         }
-        return null;
     }
 
     public void deleteTransaction(Long id) throws Exception {
