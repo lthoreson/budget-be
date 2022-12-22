@@ -66,4 +66,23 @@ public class TransactionsService {
         }
         throw new Exception();
     }
+
+    public void autoAssign() throws Exception {
+        final var transactionsWithoutBudget = repository.findTransactionsByBudgetNull();
+        if (transactionsWithoutBudget.size() == 0) {
+            throw new Exception("All transactions have been assigned already");
+        }
+        Boolean foundAssociation = false;
+        for (Transaction t : transactionsWithoutBudget) {
+            final var transactionDestination = destinationsRepository.findDestinationByName(t.destination).orElse(null);
+            if (transactionDestination != null && transactionDestination.budget != null) {
+                foundAssociation = true;
+                t.budget = transactionDestination.budget.id;
+                repository.save(t);
+            }
+        }
+        if (!foundAssociation) {
+            throw new Exception("Some destinations do not have a default budget. Add or edit a transaction to set the default budget.");
+        }
+    }
 }
